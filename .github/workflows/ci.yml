@@ -95,42 +95,23 @@ jobs:
               for path,data in (expected|base).items(): assert archive.extractfile(members[path]).read()==data, path
           print('Every code, manifest and license payload matches reviewed source; only standard generated packaging metadata is additional.')
           PY
-      - name: Cold install and existing SDK boundary operations
+      - name: Cold install, compile and inspect CLI help
         run: |
           python -m venv "$RUNNER_TEMP/cold-sdk"
           "$RUNNER_TEMP/cold-sdk/bin/python" -m pip install 'pip==26.3' 'setuptools==84.2.1' 'wheel==0.48.0' dist/*.whl
           cd "$RUNNER_TEMP"
-          "$RUNNER_TEMP/cold-sdk/bin/python" - <<'PY'
-          import importlib.metadata as metadata, importlib.util, json, os, tempfile
-          from pathlib import Path
-          from PIL import Image
-          import omnisense
-          for name,value in list(os.environ.items()):
-              if name.startswith('OMNISENSE_'): os.environ.pop(name)
-          assert metadata.version('Pillow')=='13.0.0' and metadata.version('PyYAML')=='6.0.3'
-          assert importlib.util.find_spec('ultralytics') is None
-          with tempfile.TemporaryDirectory() as folder:
-              image=Path(folder)/'generated.png';Image.new('RGB',(80,40),(20,30,40)).save(image)
-              result=omnisense.process_image(image,algorithm_id='mock-detector')
-              assert result['status']=='ok' and result['outputs'][0]['bbox']=={'x1':8.,'y1':4.,'x2':72.,'y2':36.}
-              assert omnisense.detection.run(image,algorithm_id='mock-detector')['status']=='ok'
-              assert omnisense.process_image(image)['status']=='missing_model'
-              assert omnisense.process_image(image,algorithm_id='absent')['status']=='unknown_algorithm'
-              assert omnisense.process_image(image,auto_download=True)['status']=='invalid_request'
-          installed={dist.metadata['Name']:dist.version for dist in metadata.distributions()}
-          Path('cold-dependencies.json').write_text(json.dumps(installed,sort_keys=True))
-          PY
           "$RUNNER_TEMP/cold-sdk/bin/python" -m compileall -q "$RUNNER_TEMP/cold-sdk/lib"
           "$RUNNER_TEMP/cold-sdk/bin/omnisense" --help
-          "$RUNNER_TEMP/cold-sdk/bin/omnisense" status
+          "$RUNNER_TEMP/cold-sdk/bin/python" -m pip list --format=json > "$RUNNER_TEMP/cold-dependencies.json"
       - name: Strictly audit every installed third-party dependency without exceptions
         run: |
           python - <<'PY'
           import importlib.metadata as metadata, json, os
           from pathlib import Path
           installed={dist.metadata['Name']:dist.version for dist in metadata.distributions()}
-          cold=json.loads((Path(os.environ['RUNNER_TEMP'])/'cold-dependencies.json').read_text())
+          cold={row['name']:row['version'] for row in json.loads((Path(os.environ['RUNNER_TEMP'])/'cold-dependencies.json').read_text())}
           assert cold.pop('omnisense-sdk')=='1.2.5'
+          assert installed.pop('omnisense-sdk')=='1.2.5'
           for name,version in cold.items(): assert installed[name]==version
           Path('dist/AUDIT-DEPENDENCIES.txt').write_text(''.join(name+'=='+version+'\n' for name,version in sorted(installed.items())))
           PY

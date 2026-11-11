@@ -25,9 +25,10 @@
     },
     {
       "path": "LICENSE",
-      "sha256": "9ff8247736a5e8681e789b0e4a6c2c7c1f2c92cb2f4239ab4fccd865ec619790",
-      "origin": "OmniSense-authored generic code or SDK subset metadata",
-      "source_sha256": "9ff8247736a5e8681e789b0e4a6c2c7c1f2c92cb2f4239ab4fccd865ec619790"
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "origin": "Apache Software Foundation canonical Apache-2.0 license text",
+      "source_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "source_url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
     },
     {
       "path": "MANIFEST.in",
@@ -37,7 +38,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "fab981b1c31bbf729495c7039f4688a78daf67e3bae1248107b0db1caa22c8c6",
+      "sha256": "441e6d0310032c0ec8c6cc8856678cd2c9852e090a340a9b87d56846294a0633",
       "origin": "OmniSense-authored generic code or SDK subset metadata",
       "source_sha256": "103fb12935eb26c43d22399c0d7ca777e04e05aae92ea79bda21e2e9f08b02a3"
     },
@@ -111,7 +112,7 @@
       "path": ".github/workflows/ci.yml",
       "origin": "OmniSense-authored SDK source and packaging CI metadata",
       "source_sha256": null,
-      "sha256": "7c08eeb4cefa1b97f4d6dc85b5a620a0c5819a638abbdf7cccb2df951c9a9494"
+      "sha256": "4618e113c2082bc6fbacde3414914988479577cacb22f0853fa6edb1c8c1a57d"
     }
   ],
   "reviewed_runtime_dependencies": {
