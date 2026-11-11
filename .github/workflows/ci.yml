@@ -73,7 +73,7 @@ jobs:
           dist=Path('dist')
           wheels=list(dist.glob('*.whl'));sdists=list(dist.glob('*.tar.gz'))
           assert len(wheels)==len(sdists)==1
-          info='omnisense_sdk-1.2.5.dist-info/'
+          info='omnisense_sdk-1.2.6.dist-info/'
           metadata={info+path for path in ['METADATA','WHEEL','RECORD','entry_points.txt','top_level.txt','licenses/LICENSE']}
           with zipfile.ZipFile(wheels[0]) as archive:
               assert len(archive.namelist())==len(set(archive.namelist()))
@@ -110,8 +110,8 @@ jobs:
           from pathlib import Path
           installed={dist.metadata['Name']:dist.version for dist in metadata.distributions()}
           cold={row['name']:row['version'] for row in json.loads((Path(os.environ['RUNNER_TEMP'])/'cold-dependencies.json').read_text())}
-          assert cold.pop('omnisense-sdk')=='1.2.5'
-          assert installed.pop('omnisense-sdk')=='1.2.5'
+          assert cold.pop('omnisense-sdk')=='1.2.6'
+          assert installed.pop('omnisense-sdk')=='1.2.6'
           for name,version in cold.items(): assert installed[name]==version
           Path('dist/AUDIT-DEPENDENCIES.txt').write_text(''.join(name+'=='+version+'\n' for name,version in sorted(installed.items())))
           PY

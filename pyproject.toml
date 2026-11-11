@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "omnisense-sdk"
-version = "1.2.5"
+version = "1.2.6"
 description = "OmniSense Python SDK for user-configured independent task engines"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [{ name = "OmniSense Contributors" }]
 dependencies = ["Pillow==13.0.0", "PyYAML==6.0.3"]

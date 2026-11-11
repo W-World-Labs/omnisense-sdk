@@ -38,7 +38,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "441e6d0310032c0ec8c6cc8856678cd2c9852e090a340a9b87d56846294a0633",
+      "sha256": "265b01c8619cafdf2779974ea160f6bd255dffed714b7b2d311551249e9c418b",
       "origin": "OmniSense-authored generic code or SDK subset metadata",
       "source_sha256": "103fb12935eb26c43d22399c0d7ca777e04e05aae92ea79bda21e2e9f08b02a3"
     },
@@ -98,7 +98,7 @@
     },
     {
       "path": "pyproject.toml",
-      "sha256": "82f3694068ed46641f0aea3807f9b85888d9fb22e4abafdab4830410da24918b",
+      "sha256": "6d39cf9359c2286716075a2d234bd0676e49f762a1fb76d8974fe33b45210a51",
       "origin": "OmniSense-authored generic code or SDK subset metadata",
       "source_sha256": "8612a31b5f057e7eee4a2d05d01892f7894c5e7f5931947c6a60c14df2207394"
     },
@@ -112,7 +112,7 @@
       "path": ".github/workflows/ci.yml",
       "origin": "OmniSense-authored SDK source and packaging CI metadata",
       "source_sha256": null,
-      "sha256": "4618e113c2082bc6fbacde3414914988479577cacb22f0853fa6edb1c8c1a57d"
+      "sha256": "7f44058b7716d9c2d1292e6b269361d0c1da13fd928f68700ac284d4c7aa1227"
     }
   ],
   "reviewed_runtime_dependencies": {
@@ -138,5 +138,8 @@
     "pip-audit": "2.10.1",
     "gitleaks": "8.30.1",
     "scope": "Exact direct tools; resolved third-party closure is recorded and strictly audited by each CI run."
-  }
+  },
+  "sdk_distribution_version": "1.2.6",
+  "minimum_python": "3.11",
+  "metadata_correction": "The declared Python floor now matches the exact Pillow13.0.0 runtime requirement. Python implementation files are unchanged from SDK1.2.5."
 }

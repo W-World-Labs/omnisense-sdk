@@ -1,5 +1,7 @@
 # OmniSense Python SDK
 
+Version `1.2.6` requires Python 3.11 or newer, matching the pinned Pillow 13.0.0 dependency. This metadata correction leaves the SDK interfaces and behavior unchanged.
+
 This source subset provides a Python image-task SDK and CLI for an independent, user-configured HTTP engine. It does not contain a Rust service, native inference implementation, model implementation, speech worker, engine package, model weights, datasets or production deployment configuration. Distribution name: `omnisense-sdk`; import and command name: `omnisense`. No public package-index release is claimed by this source snapshot.
 
 ## Install and use
