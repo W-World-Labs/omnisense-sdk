@@ -1,0 +1,13 @@
+schema_version: 1
+id: mock-detector
+version: 0.1.0
+name_zh: 合成检测示例
+name_en: mock-detector
+runtime:
+  kind: mock
+models: []
+capabilities:
+  - id: mock-detector
+    model_ids: []
+    depends_on: []
+    privacy: []

@@ -1,0 +1,153 @@
+name: SDK source and packages
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sdk-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  sdk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify reviewed source closure
+        run: |
+          python - <<'PY'
+          import hashlib, json, subprocess, unicodedata
+          from pathlib import Path
+          root=Path('.')
+          tracked=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')[:-1]
+          manifest=json.loads(Path('PROVENANCE.json').read_text())
+          expected={row['path'] for row in manifest['files']} | {'PROVENANCE.json'}
+          assert len(tracked)==len(expected)==17 and set(tracked)==expected
+          assert manifest['scope']=='Python SDK and generic independent HTTP task client only'
+          names=set()
+          for path in tracked:
+              item=Path(path)
+              assert item.is_file() and not item.is_symlink()
+              assert not item.is_absolute() and '..' not in item.parts
+              folded=unicodedata.normalize('NFC',path).casefold()
+              assert folded not in names
+              names.add(folded)
+          for row in manifest['files']:
+              assert hashlib.sha256(Path(row['path']).read_bytes()).hexdigest()==row['sha256'], row['path']
+          PY
+      - name: Strict secret scan of source and complete new history
+        run: |
+          set -euo pipefail
+          curl --retry 2 --connect-timeout 15 --max-time 90 -fsSL -o "$RUNNER_TEMP/gitleaks.tar.gz" https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP" gitleaks
+          mkdir "$RUNNER_TEMP/reviewed-source"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/reviewed-source"
+          "$RUNNER_TEMP/gitleaks" dir "$RUNNER_TEMP/reviewed-source" --ignore-gitleaks-allow --redact=100 --no-banner --timeout 180
+          "$RUNNER_TEMP/gitleaks" git . --log-opts=--all --ignore-gitleaks-allow --redact=100 --no-banner --timeout 180
+      - name: Install exact reviewed build and runtime versions
+        run: |
+          python -m pip install 'pip==26.3' 'setuptools==84.2.1' 'wheel==0.48.0' 'build==1.6.1' 'pip-audit==2.10.1' 'Pillow==13.0.0' 'PyYAML==6.0.3'
+      - name: Build source distribution and wheel
+        run: |
+          python -m build --no-isolation
+          python -m compileall -q omnisense
+      - name: Match every package payload to reviewed source
+        run: |
+          python - <<'PY'
+          import base64, csv, hashlib, io, json, tarfile, zipfile
+          from pathlib import Path
+          expected={str(path):path.read_bytes() for path in Path('omnisense').glob('*.py')}
+          expected.update({'omnisense/bundled_algorithms/'+str(path.relative_to('algorithms')):path.read_bytes() for path in Path('algorithms').glob('*/manifest.yaml')})
+          dist=Path('dist')
+          wheels=list(dist.glob('*.whl'));sdists=list(dist.glob('*.tar.gz'))
+          assert len(wheels)==len(sdists)==1
+          info='omnisense_sdk-1.2.5.dist-info/'
+          metadata={info+path for path in ['METADATA','WHEEL','RECORD','entry_points.txt','top_level.txt','licenses/LICENSE']}
+          with zipfile.ZipFile(wheels[0]) as archive:
+              assert len(archive.namelist())==len(set(archive.namelist()))
+              assert set(archive.namelist())==set(expected)|metadata
+              for path,data in expected.items(): assert archive.read(path)==data, path
+              assert archive.read(info+'licenses/LICENSE')==Path('LICENSE').read_bytes()
+              for path,digest,size in csv.reader(io.StringIO(archive.read(info+'RECORD').decode())):
+                  data=archive.read(path)
+                  if path==info+'RECORD': assert not digest and not size
+                  else:
+                      encoded=base64.urlsafe_b64encode(hashlib.sha256(data).digest()).rstrip(b'=').decode()
+                      assert digest=='sha256='+encoded and int(size)==len(data)
+          base={path:Path(path).read_bytes() for path in ['LICENSE','MANIFEST.in','PROVENANCE.json','README.md','pyproject.toml','setup.py']}
+          generated={'PKG-INFO','setup.cfg'}|{'omnisense_sdk.egg-info/'+path for path in ['PKG-INFO','SOURCES.txt','dependency_links.txt','entry_points.txt','requires.txt','top_level.txt']}
+          with tarfile.open(sdists[0]) as archive:
+              members={item.name.split('/',1)[1]:item for item in archive if item.isfile()}
+              assert set(members)==set(expected)|set(base)|generated
+              assert not any(item.issym() or item.islnk() for item in archive)
+              for path,data in (expected|base).items(): assert archive.extractfile(members[path]).read()==data, path
+          print('Every code, manifest and license payload matches reviewed source; only standard generated packaging metadata is additional.')
+          PY
+      - name: Cold install and existing SDK boundary operations
+        run: |
+          python -m venv "$RUNNER_TEMP/cold-sdk"
+          "$RUNNER_TEMP/cold-sdk/bin/python" -m pip install 'pip==26.3' 'setuptools==84.2.1' 'wheel==0.48.0' dist/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/cold-sdk/bin/python" - <<'PY'
+          import importlib.metadata as metadata, importlib.util, json, os, tempfile
+          from pathlib import Path
+          from PIL import Image
+          import omnisense
+          for name,value in list(os.environ.items()):
+              if name.startswith('OMNISENSE_'): os.environ.pop(name)
+          assert metadata.version('Pillow')=='13.0.0' and metadata.version('PyYAML')=='6.0.3'
+          assert importlib.util.find_spec('ultralytics') is None
+          with tempfile.TemporaryDirectory() as folder:
+              image=Path(folder)/'generated.png';Image.new('RGB',(80,40),(20,30,40)).save(image)
+              result=omnisense.process_image(image,algorithm_id='mock-detector')
+              assert result['status']=='ok' and result['outputs'][0]['bbox']=={'x1':8.,'y1':4.,'x2':72.,'y2':36.}
+              assert omnisense.detection.run(image,algorithm_id='mock-detector')['status']=='ok'
+              assert omnisense.process_image(image)['status']=='missing_model'
+              assert omnisense.process_image(image,algorithm_id='absent')['status']=='unknown_algorithm'
+              assert omnisense.process_image(image,auto_download=True)['status']=='invalid_request'
+          installed={dist.metadata['Name']:dist.version for dist in metadata.distributions()}
+          Path('cold-dependencies.json').write_text(json.dumps(installed,sort_keys=True))
+          PY
+          "$RUNNER_TEMP/cold-sdk/bin/python" -m compileall -q "$RUNNER_TEMP/cold-sdk/lib"
+          "$RUNNER_TEMP/cold-sdk/bin/omnisense" --help
+          "$RUNNER_TEMP/cold-sdk/bin/omnisense" status
+      - name: Strictly audit every installed third-party dependency without exceptions
+        run: |
+          python - <<'PY'
+          import importlib.metadata as metadata, json, os
+          from pathlib import Path
+          installed={dist.metadata['Name']:dist.version for dist in metadata.distributions()}
+          cold=json.loads((Path(os.environ['RUNNER_TEMP'])/'cold-dependencies.json').read_text())
+          assert cold.pop('omnisense-sdk')=='1.2.5'
+          for name,version in cold.items(): assert installed[name]==version
+          Path('dist/AUDIT-DEPENDENCIES.txt').write_text(''.join(name+'=='+version+'\n' for name,version in sorted(installed.items())))
+          PY
+          python -m pip_audit --strict --no-deps --disable-pip --requirement dist/AUDIT-DEPENDENCIES.txt
+          python -m pip freeze > dist/BUILD-DEPENDENCIES.txt
+      - name: Record source identity and artifact checksums
+        run: |
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          dist=Path('dist')
+          (dist/'SOURCE.json').write_text(json.dumps({'schema_version':1,'source_commit':os.environ['GITHUB_SHA'],'scope':'Python SDK and generic independent HTTP task client only','license':'Apache-2.0','models_included':False,'media_included':False,'gpu_acceptance':False},sort_keys=True)+'\n')
+          (dist/'SHA256SUMS').write_text(''.join(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.name+'\n' for path in sorted(dist.iterdir()) if path.is_file()))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: omnisense-sdk
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14

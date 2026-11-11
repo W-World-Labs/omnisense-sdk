@@ -1,0 +1,13 @@
+schema_version: 1
+id: object-detection
+version: 0.1.0
+name_zh: 目标检测
+name_en: object-detection
+runtime:
+  kind: external-http
+models: []
+capabilities:
+  - id: object-detection
+    model_ids: []
+    depends_on: []
+    privacy: []

@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "scope": "Python SDK and generic independent HTTP task client only",
+  "project_code_license": "Apache-2.0",
+  "authorship": "OmniSense Contributors",
+  "lineage": {
+    "generic_python_package_origin": "d65177be602ebc887fbb46d4322b4c70b6fa6edc",
+    "http_client_source_snapshot": "6fe7903131a15946567bf9f1a98f8167de68bdd5"
+  },
+  "excluded_categories": [
+    "native runtime",
+    "engine implementations",
+    "speech workers",
+    "trained weights",
+    "datasets",
+    "deployment configuration",
+    "historical git metadata"
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "c55aefbd822c0b9adbb448555466ccbc5cfd299addade32e891ef4d665990600",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "63f0a228cdfc0714c7411e45d1a41d8d2bdbfe78fbf9e122280161a000081cfd"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "9ff8247736a5e8681e789b0e4a6c2c7c1f2c92cb2f4239ab4fccd865ec619790",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "9ff8247736a5e8681e789b0e4a6c2c7c1f2c92cb2f4239ab4fccd865ec619790"
+    },
+    {
+      "path": "MANIFEST.in",
+      "sha256": "c445921705bc95949bac65e5620c5c04752732c8794ab67a43d5504f570be5e3",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "62a4627556d2eda3ab11584d125718fbd9769270efe646b13ce0ee45bb16842f"
+    },
+    {
+      "path": "README.md",
+      "sha256": "fab981b1c31bbf729495c7039f4688a78daf67e3bae1248107b0db1caa22c8c6",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "103fb12935eb26c43d22399c0d7ca777e04e05aae92ea79bda21e2e9f08b02a3"
+    },
+    {
+      "path": "algorithms/mock-detector/manifest.yaml",
+      "sha256": "f5d376ebb40b36642c24b7f621fa3ff697a4bc242815538f45a6f237d395e0cb",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "78cb4683b30c99a92089045f41f99a449b758dd39f5ab0e093c2f3f364e4f40b"
+    },
+    {
+      "path": "algorithms/object-detection/manifest.yaml",
+      "sha256": "0c4d43e121a804f8df4d7fa71c2bc00410aba6a4e554eb00b2eb66eb5bb310a6",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "07a88b64d31123d720413eda275f65cc4f28f6bf664a548986ecd2163fed03f6"
+    },
+    {
+      "path": "omnisense/__init__.py",
+      "sha256": "473c7737f39cfe60dbc5918a3a1bcaa699313c7ff4cc393c76033b352ccbba6a",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "473c7737f39cfe60dbc5918a3a1bcaa699313c7ff4cc393c76033b352ccbba6a"
+    },
+    {
+      "path": "omnisense/__main__.py",
+      "sha256": "6e3881743f6167552c2617be7b1c5a2d760b1edd0c238331c92cffef552b8b8e",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "6e3881743f6167552c2617be7b1c5a2d760b1edd0c238331c92cffef552b8b8e"
+    },
+    {
+      "path": "omnisense/backends.py",
+      "sha256": "6e9f5e354e67e1a71bfe7a8b08181f25010b62d6ea07c723992f39a853e93643",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "6e9f5e354e67e1a71bfe7a8b08181f25010b62d6ea07c723992f39a853e93643"
+    },
+    {
+      "path": "omnisense/cli.py",
+      "sha256": "532b58983a20a9f19839f5ba7c5cf8e550023a2be80113ace28184f782da317b",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "3184ae2bdc6ebef8530a9412c7e3874d0cb73e5122b511ff1182126f3eea138f"
+    },
+    {
+      "path": "omnisense/hardware.py",
+      "sha256": "f4bfb41bb2355ff05f5b8d31c1bc63383943610a51fb6d38954cbe9eaca019f8",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "f4bfb41bb2355ff05f5b8d31c1bc63383943610a51fb6d38954cbe9eaca019f8"
+    },
+    {
+      "path": "omnisense/registry.py",
+      "sha256": "754a82a04ffbdcabd7f8730a56e29908495724a9410a18332c4441b6a2ee7346",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "69747c749f53ba5b00bfb6c315e2a81e1471e2d65654ed097b1c2b05a4f874d5"
+    },
+    {
+      "path": "omnisense/vision.py",
+      "sha256": "b3a54b8c77a64ce6ad0bc738fddfc925a68556f24909621353997f8d6843fc95",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "337be3c8978eec8bc312b6a19890f828bb65461bc8ad22df59540d8b43dbc456"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "82f3694068ed46641f0aea3807f9b85888d9fb22e4abafdab4830410da24918b",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "8612a31b5f057e7eee4a2d05d01892f7894c5e7f5931947c6a60c14df2207394"
+    },
+    {
+      "path": "setup.py",
+      "sha256": "102402ad8117a2ad2a452a375152dd478ccffed28925613b8ec9f5681eee5f57",
+      "origin": "OmniSense-authored generic code or SDK subset metadata",
+      "source_sha256": "102402ad8117a2ad2a452a375152dd478ccffed28925613b8ec9f5681eee5f57"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "origin": "OmniSense-authored SDK source and packaging CI metadata",
+      "source_sha256": null,
+      "sha256": "7c08eeb4cefa1b97f4d6dc85b5a620a0c5819a638abbdf7cccb2df951c9a9494"
+    }
+  ],
+  "reviewed_runtime_dependencies": {
+    "Pillow": {
+      "version": "13.0.0",
+      "license": "MIT-CMU",
+      "source": "https://github.com/python-pillow/Pillow/tree/13.0.0",
+      "license_url": "https://github.com/python-pillow/Pillow/blob/13.0.0/LICENSE"
+    },
+    "PyYAML": {
+      "version": "6.0.3",
+      "license": "MIT",
+      "source": "https://github.com/yaml/pyyaml/tree/6.0.3",
+      "license_url": "https://github.com/yaml/pyyaml/blob/6.0.3/LICENSE"
+    }
+  },
+  "build_environment": {
+    "python": "3.12 in GitHub CI; local cold verification also uses 3.11",
+    "pip": "26.3",
+    "setuptools": "84.2.1",
+    "wheel": "0.48.0",
+    "build": "1.6.1",
+    "pip-audit": "2.10.1",
+    "gitleaks": "8.30.1",
+    "scope": "Exact direct tools; resolved third-party closure is recorded and strictly audited by each CI run."
+  }
+}
