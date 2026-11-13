@@ -89,7 +89,10 @@ jobs:
           base={path:Path(path).read_bytes() for path in ['LICENSE','MANIFEST.in','PROVENANCE.json','README.md','pyproject.toml','setup.py']}
           generated={'PKG-INFO','setup.cfg'}|{'omnisense_sdk.egg-info/'+path for path in ['PKG-INFO','SOURCES.txt','dependency_links.txt','entry_points.txt','requires.txt','top_level.txt']}
           with tarfile.open(sdists[0]) as archive:
-              members={item.name.split('/',1)[1]:item for item in archive if item.isfile()}
+              files=[item for item in archive if item.isfile()]
+              names=[item.name.split('/',1)[1] for item in files]
+              assert len(names)==len(set(names))
+              members=dict(zip(names,files))
               assert set(members)==set(expected)|set(base)|generated
               assert not any(item.issym() or item.islnk() for item in archive)
               for path,data in (expected|base).items(): assert archive.extractfile(members[path]).read()==data, path
@@ -124,6 +127,9 @@ jobs:
           from pathlib import Path
           dist=Path('dist')
           (dist/'SOURCE.json').write_text(json.dumps({'schema_version':1,'source_commit':os.environ['GITHUB_SHA'],'scope':'Python SDK and generic independent HTTP task client only','license':'Apache-2.0','models_included':False,'media_included':False,'gpu_acceptance':False},sort_keys=True)+'\n')
+          expected={'AUDIT-DEPENDENCIES.txt','BUILD-DEPENDENCIES.txt','SOURCE.json'}|{path.name for pattern in ['*.whl','*.tar.gz'] for path in dist.glob(pattern)}
+          assert len(expected)==5 and {path.name for path in dist.iterdir()}==expected
+          assert all(path.is_file() and not path.is_symlink() for path in dist.iterdir())
           (dist/'SHA256SUMS').write_text(''.join(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.name+'\n' for path in sorted(dist.iterdir()) if path.is_file()))
           PY
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
