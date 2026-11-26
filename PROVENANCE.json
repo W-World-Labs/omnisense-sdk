@@ -92,7 +92,7 @@
     {
       "path": ".github/workflows/ci.yml",
       "origin": "OmniSense-authored SDK source and packaging CI metadata",
-      "sha256": "ff03b602b335eb19b9028e309cf5d258bd9fe82be16e8b13d7b2a4b922d07dbc"
+      "sha256": "c52dbe5319b17e534b1c2b46314b86b5570fabebfbac8f7280370b64d842b6a6"
     }
   ],
   "reviewed_runtime_dependencies": {
